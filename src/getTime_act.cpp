@@ -17,6 +17,8 @@
 #include "geometry_msgs/PointStamped.h"
 #include <tf/transform_listener.h>
 #include <cmath>
+#include "rehab_person_loc/location_info.h"
+#include "rehab_person_loc/time_info.h"
 using namespace std;
 
 
@@ -60,6 +62,8 @@ class MAP_TAG
     geometry_msgs::PointStamped person_loc_base;
     geometry_msgs::PointStamped person_loc_map;
     LOC_TAG CURRENT, PREV;
+    rehab_person_loc::location_info loc_info;
+    rehab_person_loc::time_info time_info;
 
     struct TIME_TRACK
     {
@@ -77,43 +81,50 @@ class MAP_TAG
         if (x < kitchen.x1 and x > kitchen.x2 and y > kitchen.y1 and y < kitchen.y2)
         {
           cout<<"Person is *Inside Kitchen"<<endl;
+          loc_info.robot_location = "Inside Kitchen";
           CURRENT = kitchen_loc;
         }
         
 
         else if (x < lounge.x1 and x > lounge.x2 and y > lounge.y1 and y < lounge.y2)
         { 
-          cout<<"Person is *Inside Lounge"<<endl;        
+          cout<<"Person is *Inside Lounge"<<endl;
+          loc_info.robot_location = "Inside Lounge";        
           CURRENT = lounge_loc;
         }
         
         else if (x < entrance.x1 and x > entrance.x2 and y > entrance.y1 and y < entrance.y2)
         {
           cout<<"Person is *At Entrance"<<endl;
+          loc_info.robot_location = "At Entrance";
           CURRENT = entrance_loc;
         }
 
         else if (x < lobby.x1 and x > lobby.x2 and y > lobby.y1 and y < lobby.y2)
         {
-          cout<<"Person is *Inside Lobby"<<endl;  
+          cout<<"Person is *Inside Lobby"<<endl;
+          loc_info.robot_location = "Inside Lobby";          
           CURRENT = lobby_loc;
         }
 
         else if (x < tvRoom.x1 and x > tvRoom.x2 and y > tvRoom.y1 and y < tvRoom.y2)
         {
           cout<<"Person is *Inside TV Room"<<endl;
+          loc_info.robot_location = "Inside TvRoom";
           CURRENT = tvRoom_loc;
         }
 
         else if (x < bedRoom.x1 and x > bedRoom.x2 and y > bedRoom.y1 and y < bedRoom.y2)
         {
-          cout<<"Person is *Inside Bedroom"<<endl; 
+          cout<<"Person is *Inside Bedroom"<<endl;
+          loc_info.robot_location = "Inside BedRoom"; 
           CURRENT = bedRoom_loc;
         }
 
         else 
         {
             cout<<"--Away--"<<endl;
+            loc_info.robot_location = "Away";
             CURRENT = away_loc;
         }
     }
@@ -133,9 +144,7 @@ void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
     robot.person_loc_cam.point.x = msg->point.x;
     robot.person_loc_cam.point.y = msg->point.y;
     robot.person_loc_cam.point.z = msg->point.z;
-    
-
-   // cout<<"Robot in Kitchen = "<< diff <<endl;
+ 
 }
 
 //Timer Callback
@@ -202,6 +211,8 @@ int main(int argc, char **argv)
     //ros::Subscriber robot_sub = n.subscribe("/rtabmap/localization_pose", 1000,localization_poseCallback);
     ros::Subscriber person_sub = n.subscribe("/person_loc", 1000,person_loc_callback);
     ros::Publisher person_Loc_pub = n.advertise<geometry_msgs::PointStamped>("/person_loc_estimated", 1000);
+    ros::Publisher location_pub = n.advertise<rehab_person_loc::location_info>("/location_tag", 1000);
+    ros::Publisher time_pub = n.advertise<rehab_person_loc::time_info>("/time_info", 1000);
     ros::Timer timer = n.createTimer(ros::Duration(1.0), timerCallback);
     ros::Rate loop_rate(10);
     unsigned int seq = 0;
@@ -228,9 +239,26 @@ int main(int argc, char **argv)
             ros::Duration(1.0).sleep();
         }
 
+        //Location Update over ROSTopic//
+        robot.loc_info.stamp = ros::Time::now();
+        robot.loc_info.frame_id = "map";
+        location_pub.publish(robot.loc_info);
+
+        //Time Update over ROSTopic//
+        robot.time_info.kitchen_time = robot.person_time.kitchen;
+        robot.time_info.lounge_time = robot.person_time.lounge;
+        robot.time_info.entrance_time = robot.person_time.entrance;
+        robot.time_info.lobby_time = robot.person_time.lobby;
+        robot.time_info.tvRoom_time = robot.person_time.tvRoom;
+        robot.time_info.bedRoom_time = robot.person_time.bedRoom;
+
+        time_pub.publish(robot.time_info);
+
+        
         //Timing Part
         robot.FindPoint(robot.person_loc_map.point.x,robot.person_loc_map.point.y);
-        cout<<"---"<<endl;
+        
+        /*cout<<"---"<<endl;
         cout<<"Current Loc Tag: "<<robot.CURRENT<<endl;
 
         cout<<"Kitchen Time: "<<robot.person_time.kitchen<<" sec"<<endl;
@@ -240,14 +268,9 @@ int main(int argc, char **argv)
         cout<<"TvRoom Time: "<<robot.person_time.tvRoom<<" sec"<<endl;
         cout<<"BedRoom Time: "<<robot.person_time.bedRoom<<" sec"<<endl;
         cout<<"Away Time: "<<robot.person_time.away<<" sec"<<endl;
-        cout<<"---"<<endl;
+        cout<<"---"<<endl;*/
 
-
-        //
-        
         // Publishing the Person location after transforming from
-            
-
         geometry_msgs::PointStamped person_location_est;
         person_location_est.header.seq = seq;
         ++seq;
