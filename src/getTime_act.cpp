@@ -61,7 +61,7 @@ class MAP_TAG
     geometry_msgs::PointStamped person_loc_cam;
     geometry_msgs::PointStamped person_loc_base;
     geometry_msgs::PointStamped person_loc_map;
-    LOC_TAG CURRENT, PREV;
+    LOC_TAG CURRENT_R, CURRENT_P;
     rehab_person_loc::location_info loc_info;
     rehab_person_loc::time_info time_info;
 
@@ -76,64 +76,113 @@ class MAP_TAG
         double away;
     }person_time;
     
-    bool FindPoint(double x, double y)
+    bool FindPerson(double x, double y)
     {
         if (x < kitchen.x1 and x > kitchen.x2 and y > kitchen.y1 and y < kitchen.y2)
         {
-          cout<<"Person is *Inside Kitchen"<<endl;
-          loc_info.robot_location = "Inside Kitchen";
-          CURRENT = kitchen_loc;
+          //cout<<"Person is *Inside Kitchen"<<endl;
+          loc_info.person_location = "Inside Kitchen";
+          CURRENT_P = kitchen_loc;
         }
         
 
         else if (x < lounge.x1 and x > lounge.x2 and y > lounge.y1 and y < lounge.y2)
         { 
-          cout<<"Person is *Inside Lounge"<<endl;
-          loc_info.robot_location = "Inside Lounge";        
-          CURRENT = lounge_loc;
+          //cout<<"Person is *Inside Lounge"<<endl;
+          loc_info.person_location = "Inside Lounge";        
+          CURRENT_P = lounge_loc;
         }
         
         else if (x < entrance.x1 and x > entrance.x2 and y > entrance.y1 and y < entrance.y2)
         {
-          cout<<"Person is *At Entrance"<<endl;
-          loc_info.robot_location = "At Entrance";
-          CURRENT = entrance_loc;
+          //cout<<"Person is *At Entrance"<<endl;
+          loc_info.person_location = "At Entrance";
+          CURRENT_P = entrance_loc;
         }
 
         else if (x < lobby.x1 and x > lobby.x2 and y > lobby.y1 and y < lobby.y2)
         {
-          cout<<"Person is *Inside Lobby"<<endl;
-          loc_info.robot_location = "Inside Lobby";          
-          CURRENT = lobby_loc;
+          //cout<<"Person is *Inside Lobby"<<endl;
+          loc_info.person_location = "Inside Lobby";          
+          CURRENT_P = lobby_loc;
         }
 
         else if (x < tvRoom.x1 and x > tvRoom.x2 and y > tvRoom.y1 and y < tvRoom.y2)
         {
-          cout<<"Person is *Inside TV Room"<<endl;
-          loc_info.robot_location = "Inside TvRoom";
-          CURRENT = tvRoom_loc;
+          //cout<<"Person is *Inside TV Room"<<endl;
+          loc_info.person_location = "Inside TvRoom";
+          CURRENT_P = tvRoom_loc;
         }
 
         else if (x < bedRoom.x1 and x > bedRoom.x2 and y > bedRoom.y1 and y < bedRoom.y2)
         {
-          cout<<"Person is *Inside Bedroom"<<endl;
-          loc_info.robot_location = "Inside BedRoom"; 
-          CURRENT = bedRoom_loc;
+          //cout<<"Person is *Inside Bedroom"<<endl;
+          loc_info.person_location = "Inside BedRoom"; 
+          CURRENT_P = bedRoom_loc;
         }
 
         else 
         {
-            cout<<"--Away--"<<endl;
+            //cout<<"--Away--"<<endl;
+            loc_info.person_location = "Away";
+            CURRENT_P = away_loc;
+        }
+    }
+
+    bool FindRobot(double x, double y)
+    {
+        if (x < kitchen.x1 and x > kitchen.x2 and y > kitchen.y1 and y < kitchen.y2)
+        {
+          //cout<<"Robot is *Inside Kitchen"<<endl;
+          loc_info.robot_location = "Inside Kitchen";
+          CURRENT_R = kitchen_loc;
+        }
+        
+
+        else if (x < lounge.x1 and x > lounge.x2 and y > lounge.y1 and y < lounge.y2)
+        { 
+          //cout<<"Robot is *Inside Lounge"<<endl;
+          loc_info.robot_location = "Inside Lounge";        
+          CURRENT_R = lounge_loc;
+        }
+        
+        else if (x < entrance.x1 and x > entrance.x2 and y > entrance.y1 and y < entrance.y2)
+        {
+          //cout<<"Robot is *At Entrance"<<endl;
+          loc_info.robot_location = "At Entrance";
+          CURRENT_R = entrance_loc;
+        }
+
+        else if (x < lobby.x1 and x > lobby.x2 and y > lobby.y1 and y < lobby.y2)
+        {
+          //cout<<"Robot is *Inside Lobby"<<endl;
+          loc_info.robot_location = "Inside Lobby";          
+          CURRENT_R = lobby_loc;
+        }
+
+        else if (x < tvRoom.x1 and x > tvRoom.x2 and y > tvRoom.y1 and y < tvRoom.y2)
+        {
+          //cout<<"Robot is *Inside TV Room"<<endl;
+          loc_info.robot_location = "Inside TvRoom";
+          CURRENT_R = tvRoom_loc;
+        }
+
+        else if (x < bedRoom.x1 and x > bedRoom.x2 and y > bedRoom.y1 and y < bedRoom.y2)
+        {
+          //cout<<"Robot is *Inside Bedroom"<<endl;
+          loc_info.robot_location = "Inside BedRoom"; 
+          CURRENT_R = bedRoom_loc;
+        }
+
+        else 
+        {
+            //cout<<"--Away--"<<endl;
             loc_info.robot_location = "Away";
-            CURRENT = away_loc;
+            CURRENT_R = away_loc;
         }
     }
 } robot;
 
-//CallBack Function for Subscriber to /rtabmap/localization_pose)  //Not being used anymore//
-/*void localization_poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
-{  
-}*/
 
 //Callback function for person location in camera_frame  a.k.a "/azure_link"
 void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
@@ -147,12 +196,23 @@ void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
  
 }
 
+//CallBack Function for Subscriber to /amcl_pose)  
+void localization_poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+{  
+    robot.robot_loc_map.header.stamp = msg->header.stamp;
+    robot.robot_loc_map.header.frame_id = msg->header.frame_id;
+    robot.robot_loc_map.point.x = msg->pose.pose.position.x;
+    robot.robot_loc_map.point.y = msg->pose.pose.position.y;
+    robot.robot_loc_map.point.z = msg->pose.pose.position.z;
+}
+
+
 //Timer Callback
 void timerCallback(const ros::TimerEvent&)
 {
   //ROS_INFO("Timer Callback");
   
-  switch(robot.CURRENT)
+  switch(robot.CURRENT_P)
   {
     case 1:
     {
@@ -202,13 +262,12 @@ void timerCallback(const ros::TimerEvent&)
 }
 
 
-
 int main(int argc, char **argv)
 {
 
     ros::init(argc, argv, "track_person_time");
     ros::NodeHandle n;
-    //ros::Subscriber robot_sub = n.subscribe("/rtabmap/localization_pose", 1000,localization_poseCallback);
+    ros::Subscriber robot_sub = n.subscribe("/amcl_pose", 1000,localization_poseCallback);
     ros::Subscriber person_sub = n.subscribe("/person_loc", 1000,person_loc_callback);
     ros::Publisher person_Loc_pub = n.advertise<geometry_msgs::PointStamped>("/person_loc_estimated", 1000);
     ros::Publisher location_pub = n.advertise<rehab_person_loc::location_info>("/location_tag", 1000);
@@ -228,6 +287,9 @@ int main(int argc, char **argv)
 
             listener.waitForTransform("/map", "/azure_link",
                                     now, ros::Duration(3.0));
+
+            cout<<"Got the Transform"<<endl;                                    
+
             listener.lookupTransform("/map", "/azure_link",  
                                     now, transform);
         
@@ -256,7 +318,8 @@ int main(int argc, char **argv)
 
         
         //Timing Part
-        robot.FindPoint(robot.person_loc_map.point.x,robot.person_loc_map.point.y);
+        robot.FindPerson(robot.person_loc_map.point.x,robot.person_loc_map.point.y);
+        robot.FindRobot(robot.robot_loc_map.point.x,robot.robot_loc_map.point.y);
         
         /*cout<<"---"<<endl;
         cout<<"Current Loc Tag: "<<robot.CURRENT<<endl;
