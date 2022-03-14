@@ -183,16 +183,21 @@ class MAP_TAG
     }
 } robot;
 
-
 //Callback function for person location in camera_frame  a.k.a "/azure_link"
 void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
 {
     //Stores Person Location in Camera Frame//
     robot.person_loc_cam.header.stamp = msg->header.stamp;
     robot.person_loc_cam.header.frame_id = msg->header.frame_id;
-    robot.person_loc_cam.point.x = msg->point.x;
+    
+    /* robot.person_loc_cam.point.x = msg->point.x;
     robot.person_loc_cam.point.y = msg->point.y;
-    robot.person_loc_cam.point.z = msg->point.z;
+    robot.person_loc_cam.point.z = msg->point.z; */
+
+    //Assigning the points accroding to Azure Kinect Axis   
+    robot.person_loc_cam.point.x = msg->point.z;
+    robot.person_loc_cam.point.y = msg->point.x;
+    robot.person_loc_cam.point.z = msg->point.y;
  
 }
 
