@@ -17,8 +17,8 @@ This package contains nodes which track the person location & the time spent in 
 After following the step 2 in the pre-requisites, you must have the following in working:
 
 * Robot must be running navigation. Verify that the topic ```/amcl_pose``` is being published by the navigation stack & the robot is able to navigate by accepting goal from *RVIZ*.
-* The AI model is running correctly and the person location is being published on rostopic ```\person_loc``` in camera frame. 
-* Make sure that the complete transform of the robot is being published correctly on ```\tf``` topic. 
+* The AI model is running correctly and the person location is being published on rostopic ```/person_loc``` in camera frame. 
+* Make sure that the complete transform of the robot is being published correctly on ```/tf``` topic. 
 
 
 ## Usage 
@@ -31,9 +31,9 @@ After following the above setup process, run the following nodes:
    ``` 
    to display the markers on the living lab map. These markers locations are hardcoded in the code. To modify the location of any marker, edit the respective marker location in ```publish_text_marker_act.cpp``` file. The map in the RVIZ should look similar to the one shown below after adding the relevant marker topics.  
 
-![Reuqired Output](images/map_labeled.png)
+   ![Reuqired Output](images/map_labeled.png)
 
-1. Run the following to run the main node.,
+2. Run the following to run the main node.,
    
    ```bash 
    rosrun rehab_person_loc getTime_act
@@ -62,5 +62,40 @@ After following the above setup process, run the following nodes:
          The duration the person spents @ various locations in the tagged area in MAP. 
 
 
+   ### Messages
+   1.  ```location_tag.msg```
+   ```bash
+   time stamp
+   string frame_id
+   string robot_location
+   string person_location
+   ``` 
 
+
+   2. ```time_info.msg```
+   ```bash
+   int32 kitchen_time
+   int32 lounge_time
+   int32 entrance_time
+   int32 lobby_time
+   int32 tvRoom_time
+   int32 bedRoom_time
+   int32 away_time
+   ```
+
+
+## Output
+Check the below two published topics for the output shown below: 
+
+* The topic ```location_tag``` will show the person and robot location in the MAP frame. Ouput will be like the one shown below. 
+  
+  ![Reuqired Output](images/location_info.png)
+
+* The topic ```time_info``` will show the duration (in seconds) the person spends at various locations inside the MAP. Ouput will be like the one shown below. 
+
+  ![Reuqired Output](images/time_info.png)
+
+* Add the topic ```person_loc_estimated``` to *RVIZ* for visualizing the location of the person inside the MAP. The output will be like the one shown below (person location shown as purple colored marker on the MAP)
+  
+  ![Reuqired Output](images/output.png)
 
