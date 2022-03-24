@@ -198,7 +198,10 @@ void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
     robot.person_loc_cam.point.x = (msg->point.z)/1000;
     robot.person_loc_cam.point.y = (msg->point.x)/1000;
     robot.person_loc_cam.point.z = (msg->point.y)/1000;
- 
+    cout<<"--"<<endl;
+    cout<<"X: "<< robot.person_loc_cam.point.x<<endl;
+    cout<<"Y: "<< robot.person_loc_cam.point.y<<endl;
+    cout<<"Z: "<< robot.person_loc_cam.point.z<<endl;
 }
 
 //CallBack Function for Subscriber to /amcl_pose)  
