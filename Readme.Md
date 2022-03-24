@@ -58,12 +58,14 @@ After following the above setup process, run the following nodes:
    
          Location of the robot and person in MAP.
 
-   3. ```time_info```(rehab_person_loc/time_info)
+   3. ```time_info```(rehab_person_loc/time_info) 
+      
          The duration the person spents @ various locations in the tagged area in MAP. 
 
 
    ### Messages
    1.  ```location_tag.msg```
+
    ```bash
    time stamp
    string frame_id
@@ -71,8 +73,8 @@ After following the above setup process, run the following nodes:
    string person_location
    ``` 
 
-
    2. ```time_info.msg```
+
    ```bash
    int32 kitchen_time
    int32 lounge_time
@@ -99,3 +101,10 @@ Check the below two published topics for the output shown below:
   
   ![Reuqired Output](images/output.png)
 
+
+
+
+## Contact
+**Author:** Ali Ahmad  <br/>
+**Designation:** Senior Robotic Engineer <br/>
+**Email:** ali.ahmad@xavor.com <br/>
