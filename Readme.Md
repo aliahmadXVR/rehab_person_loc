@@ -1,4 +1,4 @@
-# Rehab Robot Person Location & Time Tracking 
+# Rehab Robot Person Location & Time Tracking ![Version](https://img.shields.io/badge/MRR-XAVOR-yellow)<img align="right" src="images/xavor.png" width="40" height="40"> 
 
 
 
@@ -102,9 +102,10 @@ Check the below two published topics for the output shown below:
   ![Reuqired Output](images/output.png)
 
 
+___
+<br></br>
 
-
-## Contact
+## Contact[Version](https://img.shields.io/badge/MRR-XAVOR-yellow)<img align="right" src="images/xavor.png" width="30" height="30"> 
 **Author:** Ali Ahmad  <br/>
-**Designation:** Senior Robotic Engineer <br/>
+**Designation:** Senior Robotics Engineer <br/>
 **Email:** ali.ahmad@xavor.com <br/>
