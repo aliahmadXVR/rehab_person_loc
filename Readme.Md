@@ -1,4 +1,6 @@
-# Rehab Robot Person Location & Time Tracking ![Version](https://img.shields.io/badge/MRR-XAVOR-yellow)<img align="right" src="images/xavor.png" width="40" height="40"> 
+# Rehab Robot Person Location & Time Tracking 
+![Version](https://img.shields.io/badge/MRR-XAVOR-yellow)
+<img align="right" src="images/xavor.png" width="40" height="40"> 
 
 
 
