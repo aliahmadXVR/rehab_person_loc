@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   message_generation
+  roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -223,3 +224,6 @@ add_executable(publish_text_marker_act src/publish_text_marker_act.cpp)
 target_link_libraries(publish_text_marker_act ${catkin_LIBRARIES})
 add_dependencies(publish_text_marker_act ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_executable(test_program src/test_program.cpp)
+target_link_libraries(test_program ${catkin_LIBRARIES})
+add_dependencies(test_program ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -21,6 +21,7 @@
 #include "rehab_person_loc/time_info.h"
 #include<ctime> // used to work with  system date and time
 #include <fstream>
+#include <ros/package.h>
 
 using namespace std;
 
@@ -42,13 +43,15 @@ class MAP_TAG
 
     time_t t; // t passed as argument in function time()
     struct tm * tt; // decalring variable for localtime()
-    string log_file_loc = "rehab_robot_log.txt";
-
+    // string log_file_loc = "rehab_robot_log.txt";
+    string package_loc = ros::package::getPath("rehab_person_loc");
+    string log_file_loc = package_loc + "/logs/rehab_person_loc.txt";
 
     void init_log_file()
     {
       //myfile.open ("example.bin", ios::out | ios::app)
       ofstream myfile;
+      cout<<"File location= " <<log_file_loc<<endl;
       myfile.open (log_file_loc,ios::out | ios::app );
       myfile << "\n \n";
       myfile << "Date & Time \t \t \t \t Robot Location \t Person Location \n";
@@ -113,7 +116,10 @@ class MAP_TAG
       // entrance.x1 = -1.63;  entrance.y1 = -2.7;  entrance.x2 = -4.6;    entrance.y2 = -1.3; //to be re entered//
       // lobby.x1    = -2.7;  lobby.y1    = 2.7;  lobby.x2    = -5.1;    lobby.y2    = 4.2;
       // tvRoom.x1   = -5.2;  tvRoom.y1   = -2.5;  tvRoom.x2   = -10;   tvRoom.y2   = 1.4; 
-      // bedRoom.x1  = -5.1;  bedRoom.y1  = 2.27;  bedRoom.x2  = -9.9;    bedRoom.y2 = 6.2; 
+      // bedRoom.x1  = -5.1;  bedRoom.y1  = 2.27;  bedRoom.x2  = -9.9;    bedRoom.y2 = 6.2;
+
+      init_log_file();
+      cout<<"Log file initialized"<<endl; 
     }
 
     geometry_msgs::PointStamped robot_loc_map;
