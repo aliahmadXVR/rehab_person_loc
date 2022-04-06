@@ -29,6 +29,7 @@ class MAP_TAG
 {
     private:
     
+    
     struct COORDINATE
     {
         double x1;
@@ -55,24 +56,64 @@ class MAP_TAG
     }
 
     public:
+    
+      ros::Subscriber robot_sub;
+      ros::Subscriber person_sub;
+      ros::Publisher person_Loc_pub;
+      ros::Publisher location_pub;
+      ros::Publisher time_pub;
+      ros::Timer timer;
 
-    MAP_TAG()
+    MAP_TAG(ros::NodeHandle *n)
     {
-        //Add the coordinates of the locations in map here//
-        /*kitchen.x1  = 4.23; kitchen.y1  = 1.46;  kitchen.x2  = 7.46;   kitchen.y2  = 4.94;
-        lounge.x1   = 1.66; lounge.y1   = 1.52;  lounge.x2   = 4.22;   lounge.y2   = 7.49;
-        entrance.x1 = 0;    entrance.y1 = 0;     entrance.x2 = 1.58;   entrance.y2 = 6.85;
-        lobby.x1    = 5.22; lobby.y1    = 4.81;  lobby.x2    = 7.1;    lobby.y2    = 7.3;
-        tvRoom.x1   = 0.52; tvRoom.y1   = 7.57;  tvRoom.x2   = 4.63;   tvRoom.y2   = 12.12; 
-        bedRoom.x1  = 5.2;  bedRoom.y1  = 7.4;   bedRoom.x2  = 8.9;    bedRoom.y2  = 12.1;*/
+      //number_subscriber = nh->subscribe("/number", 1000, &NumberCounter::callback_number, this);
 
-        // Actual Living Lab Coordinates (MAP-2) //
-        kitchen.x1  =  1.97;  kitchen.y1  = 1.50;  kitchen.x2  = -2.4;    kitchen.y2  =4.3;
-        lounge.x1   =  0.67;  lounge.y1   = -1.24;    lounge.x2   = -5.1;    lounge.y2   = 1.4;
-        entrance.x1 = -1.63;  entrance.y1 = -2.7;  entrance.x2 = -4.6;    entrance.y2 = -1.3; //to be re entered//
-        lobby.x1    = -2.7;  lobby.y1    = 2.7;  lobby.x2    = -5.1;    lobby.y2    = 4.2;
-        tvRoom.x1   = -5.2;  tvRoom.y1   = -2.5;  tvRoom.x2   = -10;   tvRoom.y2   = 1.4; 
-        bedRoom.x1  = -5.1;  bedRoom.y1  = 2.27;  bedRoom.x2  = -9.9;    bedRoom.y2 = 6.2; 
+      
+      robot_sub = n->subscribe("/amcl_pose", 1000, &MAP_TAG::localization_poseCallback, this);
+      person_sub = n->subscribe("/person_loc", 1000, &MAP_TAG::person_loc_callback,this);
+      person_Loc_pub = n->advertise<geometry_msgs::PointStamped>("/person_loc_estimated", 1000);
+      location_pub = n->advertise<rehab_person_loc::location_info>("/location_tag", 1000);
+      time_pub = n->advertise<rehab_person_loc::time_info>("/time_info", 1000);
+      timer = n->createTimer(ros::Duration(1.0),  &MAP_TAG::timerCallback,this);
+
+      // Get the coordinates of all areas in the 
+      n->getParam("/kitchen/x1", kitchen.x1);
+      n->getParam("/kitchen/y1", kitchen.x1);
+      n->getParam("/kitchen/x2", kitchen.x1);
+      n->getParam("/kitchen/y2", kitchen.x1);
+
+      n->getParam("/lounge/x1",  lounge.x1);
+      n->getParam("/lounge/y1",  lounge.x1);
+      n->getParam("/lounge/x2",  lounge.x1);
+      n->getParam("/lounge/y2",  lounge.x1);
+      
+      n->getParam("/entrance/x1",  entrance.x1);
+      n->getParam("/entrance/y1",  entrance.y1);
+      n->getParam("/entrance/x2",  entrance.x2);
+      n->getParam("/entrance/y2",  entrance.y2);
+      
+      n->getParam("/lobby/x1", lobby.x1);
+      n->getParam("/lobby/y1", lobby.y1);
+      n->getParam("/lobby/x2", lobby.x2);
+      n->getParam("/lobby/y2", lobby.y2);  
+
+      n->getParam("/tvRoom/x1", tvRoom.x1);
+      n->getParam("/tvRoom/y1", tvRoom.y1);
+      n->getParam("/tvRoom/x2", tvRoom.x2);
+      n->getParam("/tvRoom/y2", tvRoom.y2);
+
+      n->getParam("/bedRoom/x1", bedRoom.x1);
+      n->getParam("/bedRoom/y1", bedRoom.y1);
+      n->getParam("/bedRoom/x2", bedRoom.x2);
+      n->getParam("/bedRoom/y2", bedRoom.y2);
+      
+      // // Actual Living Lab Coordinates (MAP-2) //
+      // kitchen.x1  =  1.97;  kitchen.y1  = 1.50;  kitchen.x2  = -2.4;    kitchen.y2  =4.3;
+      // lounge.x1   =  0.67;  lounge.y1   = -1.24;    lounge.x2   = -5.1;    lounge.y2   = 1.4;
+      // entrance.x1 = -1.63;  entrance.y1 = -2.7;  entrance.x2 = -4.6;    entrance.y2 = -1.3; //to be re entered//
+      // lobby.x1    = -2.7;  lobby.y1    = 2.7;  lobby.x2    = -5.1;    lobby.y2    = 4.2;
+      // tvRoom.x1   = -5.2;  tvRoom.y1   = -2.5;  tvRoom.x2   = -10;   tvRoom.y2   = 1.4; 
+      // bedRoom.x1  = -5.1;  bedRoom.y1  = 2.27;  bedRoom.x2  = -9.9;    bedRoom.y2 = 6.2; 
     }
 
     geometry_msgs::PointStamped robot_loc_map;
@@ -225,109 +266,107 @@ class MAP_TAG
             CURRENT_R = away_loc;
         }
     }
-} robot;
 
-//Callback function for person location in camera_frame  a.k.a "/azure_link"
-void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
-{
-    //Stores Person Location in Camera Frame//
-    robot.person_loc_cam.header.stamp = msg->header.stamp;
-    robot.person_loc_cam.header.frame_id = msg->header.frame_id;
-    
-    /* robot.person_loc_cam.point.x = msg->point.x;
-    robot.person_loc_cam.point.y = msg->point.y;
-    robot.person_loc_cam.point.z = msg->point.z; */
+    //Callback function for person location in camera_frame  a.k.a "/azure_link"
+    void person_loc_callback(const geometry_msgs::PointStamped::ConstPtr& msg)
+    {
+        //Stores Person Location in Camera Frame//
+        person_loc_cam.header.stamp = msg->header.stamp;
+        person_loc_cam.header.frame_id = msg->header.frame_id;
+        
+        /* robot.person_loc_cam.point.x = msg->point.x;
+        robot.person_loc_cam.point.y = msg->point.y;
+        robot.person_loc_cam.point.z = msg->point.z; */
 
-    //Assigning the points accroding to Azure Kinect Axis   
-    robot.person_loc_cam.point.x = (msg->point.z)/1000;
-    robot.person_loc_cam.point.y = (msg->point.x)/1000;
-    robot.person_loc_cam.point.z = (msg->point.y)/1000;
-    cout<<"--"<<endl;
-    cout<<"X: "<< robot.person_loc_cam.point.x<<endl;
-    cout<<"Y: "<< robot.person_loc_cam.point.y<<endl;
-    cout<<"Z: "<< robot.person_loc_cam.point.z<<endl;
-}
+        //Assigning the points accroding to Azure Kinect  Axis   
+        person_loc_cam.point.x = (msg->point.z)/1000;   //z
+        person_loc_cam.point.y = (msg->point.x)/1000;   //x 
+        person_loc_cam.point.z = (msg->point.y)/1000;   //y
+        cout<<"--"<<endl;
+        cout<<"X: "<< person_loc_cam.point.x<<endl;
+        cout<<"Y: "<< person_loc_cam.point.y<<endl;
+        cout<<"Z: "<< person_loc_cam.point.z<<endl;
+    }
 
-//CallBack Function for Subscriber to /amcl_pose)  
-void localization_poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
-{  
-    robot.robot_loc_map.header.stamp = msg->header.stamp;
-    robot.robot_loc_map.header.frame_id = msg->header.frame_id;
-    robot.robot_loc_map.point.x = msg->pose.pose.position.x;
-    robot.robot_loc_map.point.y = msg->pose.pose.position.y;
-    robot.robot_loc_map.point.z = msg->pose.pose.position.z;
-}
+    //CallBack Function for Subscriber to /amcl_pose)  
+    void localization_poseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+    {  
+        robot_loc_map.header.stamp = msg->header.stamp;
+        robot_loc_map.header.frame_id = msg->header.frame_id;
+        robot_loc_map.point.x = msg->pose.pose.position.x;
+        robot_loc_map.point.y = msg->pose.pose.position.y;
+        robot_loc_map.point.z = msg->pose.pose.position.z;
+    }
 
-
-//Timer Callback
-void timerCallback(const ros::TimerEvent&)
-{
-  //ROS_INFO("Timer Callback");
-  
-  switch(robot.CURRENT_P)
+  //Timer Callback
+  void timerCallback(const ros::TimerEvent&)
   {
-    case 1:
+    //ROS_INFO("Timer Callback");
+    
+    switch(CURRENT_P)
     {
-      robot.person_time.kitchen ++;
+      case 1:
+      {
+        person_time.kitchen ++;
+        break;
+      }
+
+      case 2:
+      {
+        person_time.lounge ++;
+        break;
+      }
+
+      case 3:
+      {
+        person_time.entrance ++;
+        break;
+      }
+
+      case 4:
+      {
+        person_time.lobby ++;
+        break;
+      }
+
+      case 5:
+      {
+        person_time.tvRoom ++;
+        break;
+      }
+
+      case 6:
+      {
+        person_time.bedRoom ++;
+        break;
+      }
+
+      case 7:
+      {
+        person_time.away ++;
+        break;
+      }
+      default:
       break;
     }
 
-    case 2:
-    {
-      robot.person_time.lounge ++;
-      break;
-    }
-
-    case 3:
-    {
-      robot.person_time.entrance ++;
-      break;
-    }
-
-    case 4:
-    {
-      robot.person_time.lobby ++;
-      break;
-    }
-
-    case 5:
-    {
-      robot.person_time.tvRoom ++;
-      break;
-    }
-
-    case 6:
-    {
-      robot.person_time.bedRoom ++;
-      break;
-    }
-
-    case 7:
-    {
-      robot.person_time.away ++;
-      break;
-    }
-    default:
-    break;
+  write_log();
   }
 
-   robot.write_log();
-}
+};
+
 
 
 int main(int argc, char **argv)
 {
-
     ros::init(argc, argv, "track_person_time");
     ros::NodeHandle n;
-    ros::Subscriber robot_sub = n.subscribe("/amcl_pose", 1000,localization_poseCallback);
-    ros::Subscriber person_sub = n.subscribe("/person_loc", 1000,person_loc_callback);
-    ros::Publisher person_Loc_pub = n.advertise<geometry_msgs::PointStamped>("/person_loc_estimated", 1000);
-    ros::Publisher location_pub = n.advertise<rehab_person_loc::location_info>("/location_tag", 1000);
-    ros::Publisher time_pub = n.advertise<rehab_person_loc::time_info>("/time_info", 1000);
-    ros::Timer timer = n.createTimer(ros::Duration(1.0), timerCallback);
+
     ros::Rate loop_rate(10);
     unsigned int seq = 0;
+
+    MAP_TAG robot = MAP_TAG(&n);
+    
     
     tf::TransformListener listener;
 
@@ -350,14 +389,16 @@ int main(int argc, char **argv)
         }
         catch (tf::TransformException ex)
         {
-            ROS_ERROR("%s",ex.what());
+            //ROS_ERROR("%s",ex.what());
+            cout<<"!!Waiting for TF to be Availble!!"<<endl;
+            ROS_WARN("Waiting for TF to be Availble!!");
             ros::Duration(1.0).sleep();
         }
 
         //Location Update over ROSTopic//
         robot.loc_info.stamp = ros::Time::now();
         robot.loc_info.frame_id = "map";
-        location_pub.publish(robot.loc_info);
+        robot.location_pub.publish(robot.loc_info);
 
         //Time Update over ROSTopic//
         robot.time_info.kitchen_time = robot.person_time.kitchen;
@@ -367,25 +408,13 @@ int main(int argc, char **argv)
         robot.time_info.tvRoom_time = robot.person_time.tvRoom;
         robot.time_info.bedRoom_time = robot.person_time.bedRoom;
 
-        time_pub.publish(robot.time_info);
+        robot.time_pub.publish(robot.time_info);
 
         
         //Timing Part
         robot.FindPerson(robot.person_loc_map.point.x,robot.person_loc_map.point.y);
         robot.FindRobot(robot.robot_loc_map.point.x,robot.robot_loc_map.point.y);
         
-        /*cout<<"---"<<endl;
-        cout<<"Current Loc Tag: "<<robot.CURRENT<<endl;
-
-        cout<<"Kitchen Time: "<<robot.person_time.kitchen<<" sec"<<endl;
-        cout<<"Lounge Time: "<<robot.person_time.lounge<<" sec"<<endl;
-        cout<<"Entrance Time: "<<robot.person_time.entrance<<" sec"<<endl;
-        cout<<"Lobby Time: "<<robot.person_time.lobby<<" sec"<<endl;
-        cout<<"TvRoom Time: "<<robot.person_time.tvRoom<<" sec"<<endl;
-        cout<<"BedRoom Time: "<<robot.person_time.bedRoom<<" sec"<<endl;
-        cout<<"Away Time: "<<robot.person_time.away<<" sec"<<endl;
-        cout<<"---"<<endl;*/
-
         // Publishing the Person location after transforming from
         geometry_msgs::PointStamped person_location_est;
         person_location_est.header.seq = seq;
@@ -395,7 +424,7 @@ int main(int argc, char **argv)
         person_location_est.point.x = robot.person_loc_map.point.x;
         person_location_est.point.y = robot.person_loc_map.point.y;
         person_location_est.point.z = robot.person_loc_map.point.z;
-        person_Loc_pub.publish(person_location_est);  //publish person location
+        robot.person_Loc_pub.publish(person_location_est);  //publish person location
 
         ros::spinOnce();
         loop_rate.sleep();

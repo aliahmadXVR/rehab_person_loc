@@ -36,9 +36,9 @@ int main(int argc, char **argv)
     ++seq;
     person_location.header.frame_id = "/azure_link"; 
     person_location.header.stamp = ros::Time::now();
-    person_location.point.x = 1.82;  // 1.82m = 6 ft , assuming person standing in front of robot at 6 ft.
+    person_location.point.x = 0;
     person_location.point.y = 0 ;
-    person_location.point.z = 0 ;  
+    person_location.point.z = 1820;  // 1820mm = 1.28 m , assuming person standing in front of robot at 6 ft.;  
 
     //publish person location
     person_Loc_pub.publish(person_location);

@@ -6,15 +6,14 @@
 <node name="findPerson_loc_act"     pkg="rehab_person_loc"  type="findPersonLoc_in_map_act"         output="screen" /> -->
 
 
+<rosparam file="$(find rehab_person_loc)/params/room_coordinates.yaml" />
+<!-- <rosparam file="$(find rehab_person_loc)/params/rviz_label_pos.yaml" /> -->
+
+
 <node name="publish_point_inCameraLink_act"  pkg="rehab_person_loc"  type="publish_point_inCameraLink_act" output="screen" />
 <node name="getTime_act"                     pkg="rehab_person_loc"  type="getTime_act"                    output="screen" />
 <node name="publish_text_marker_act"         pkg="rehab_person_loc"  type="publish_text_marker_act"        output="screen" />
 
-<!--<node name="rviz" 
-      pkg="rviz" 
-      type="rviz" 
-      args="-d $(find rehab_person_loc)/rviz_config/person_loc_test_acutal_robot.rviz"/> 
--->
   
 </launch>
 
