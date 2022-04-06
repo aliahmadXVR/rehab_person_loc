@@ -100,6 +100,9 @@ Check the below two published topics for the output shown below:
   
   ![Reuqired Output](images/output.png)
 
+* The package also logs the person and robot location data along with the system clock time stamps in a text file. The log file is stored in ```rehab_person_loc/logs``` folder with the name ```rehab_person_loc.txt```. Sample file can be checked [here](rehab_person_loc/../logs/rehab_person_loc.txt) 
+
+
 
 ___
 <br></br>
