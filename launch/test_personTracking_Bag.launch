@@ -7,7 +7,7 @@
 
 
 <rosparam file="$(find rehab_person_loc)/params/room_coordinates.yaml" />
-<!-- <rosparam file="$(find rehab_person_loc)/params/rviz_label_pos.yaml" /> -->
+<rosparam file="$(find rehab_person_loc)/params/rviz_label_pos.yaml" />
 
 
 <node name="publish_point_inCameraLink_act"  pkg="rehab_person_loc"  type="publish_point_inCameraLink_act" output="screen" />
