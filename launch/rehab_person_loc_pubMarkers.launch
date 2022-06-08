@@ -1,0 +1,13 @@
+<!--This Launch file loads the text marker locations as rosparam ...
+    and also runs the node to publish them-->
+<launch>
+
+<rosparam file="$(find rehab_person_loc)/params/rviz_label_pos.yaml" />
+
+<node name="publish_text_marker_act"         pkg="rehab_person_loc"  type="publish_text_marker_act"        output="screen" />
+
+  
+</launch>
+
+<!-- Use this command for seperate window-->
+<!--launch-prefix="xterm -e"--> 
