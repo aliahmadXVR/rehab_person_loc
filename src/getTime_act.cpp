@@ -167,6 +167,7 @@ class MAP_TAG
       myfile.close();
     }
 
+    
     bool FindPerson(double x, double y)
     {
         if (x < kitchen.x1 and x > kitchen.x2 and y > kitchen.y1 and y < kitchen.y2)
@@ -286,7 +287,7 @@ class MAP_TAG
 
         //Assigning the points accroding to Azure Kinect  Axis   
         person_loc_cam.point.x = (msg->point.z)/1000;   //z
-        person_loc_cam.point.y = (msg->point.x)/1000;   //x 
+        person_loc_cam.point.y = (msg->point.x)/-1000;   //x 
         person_loc_cam.point.z = (msg->point.y)/1000;   //y
         cout<<"--"<<endl;
         cout<<"X: "<< person_loc_cam.point.x<<endl;
@@ -386,7 +387,7 @@ int main(int argc, char **argv)
             listener.waitForTransform("/map", "/azure_link",
                                     now, ros::Duration(3.0));
 
-            cout<<"Got the Transform"<<endl;                                    
+            //cout<<"Got the Transform"<<endl;                                    
 
             listener.lookupTransform("/map", "/azure_link",  
                                     now, transform);
@@ -427,8 +428,8 @@ int main(int argc, char **argv)
         ++seq;
         person_location_est.header.frame_id = "map"; 
         person_location_est.header.stamp = ros::Time::now();
-        person_location_est.point.x = robot.person_loc_map.point.x;
-        person_location_est.point.y = robot.person_loc_map.point.y;
+        person_location_est.point.x = robot.person_loc_map.point.x; //x
+        person_location_est.point.y = robot.person_loc_map.point.y; //y
         person_location_est.point.z = robot.person_loc_map.point.z;
         robot.person_Loc_pub.publish(person_location_est);  //publish person location
 

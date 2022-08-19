@@ -1,10 +1,12 @@
 <launch>
 
 <!-- <param name="use_sim_time" value="true" /> -->
+
+<rosparam file="$(find rehab_person_loc)/params/rviz_label_pos.yaml" />
+
 <node name="publish_text_marker_act"         pkg="rehab_person_loc"  type="publish_text_marker_act"        output="screen" />
 <node name="getTime_act"                     pkg="rehab_person_loc"  type="getTime_act"                    output="screen" />
 
-  
 </launch>
 
 <!-- Use this command for seperate window-->
