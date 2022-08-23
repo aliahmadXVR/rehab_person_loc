@@ -1,5 +1,5 @@
 /**
- * @file findPersonLoc_in_map.cpp
+ * @file getTime_act.cpp
  * @author Ali Ahmad (ali.ahmad@xavor.com)
  * @date 2022-02-24
  * 
@@ -81,14 +81,14 @@ class MAP_TAG
 
       // Get the coordinates of all areas in the 
       n->getParam("/kitchen/x1", kitchen.x1);
-      n->getParam("/kitchen/y1", kitchen.x1);
-      n->getParam("/kitchen/x2", kitchen.x1);
-      n->getParam("/kitchen/y2", kitchen.x1);
+      n->getParam("/kitchen/y1", kitchen.y1);
+      n->getParam("/kitchen/x2", kitchen.x2);
+      n->getParam("/kitchen/y2", kitchen.y2);
 
       n->getParam("/lounge/x1",  lounge.x1);
-      n->getParam("/lounge/y1",  lounge.x1);
-      n->getParam("/lounge/x2",  lounge.x1);
-      n->getParam("/lounge/y2",  lounge.x1);
+      n->getParam("/lounge/y1",  lounge.y1);
+      n->getParam("/lounge/x2",  lounge.x2);
+      n->getParam("/lounge/y2",  lounge.y2);
       
       n->getParam("/entrance/x1",  entrance.x1);
       n->getParam("/entrance/y1",  entrance.y1);
@@ -169,10 +169,12 @@ class MAP_TAG
 
     
     bool FindPerson(double x, double y)
-    {
-        if (x < kitchen.x1 and x > kitchen.x2 and y > kitchen.y1 and y < kitchen.y2)
+    { 
+        cout<<"X: "<<x<<","<<"Y: "<<y<<","<<endl;
+        if (x < kitchen.x1 and x > kitchen.x2 and y < kitchen.y1 and y > kitchen.y2)
+        //if (x < kitchen.x1 and x > kitchen.x2 and y > kitchen.y1 and y < kitchen.y2)
         {
-          //cout<<"Person is *Inside Kitchen"<<endl;
+          cout<<"Person is *Inside Kitchen"<<endl;
           loc_info.person_location = "Inside Kitchen";
           CURRENT_P = kitchen_loc;
         }
@@ -180,42 +182,42 @@ class MAP_TAG
 
         else if (x < lounge.x1 and x > lounge.x2 and y > lounge.y1 and y < lounge.y2)
         { 
-          //cout<<"Person is *Inside Lounge"<<endl;
+          cout<<"Person is *Inside Lounge"<<endl;
           loc_info.person_location = "Inside Lounge";        
           CURRENT_P = lounge_loc;
         }
         
         else if (x < entrance.x1 and x > entrance.x2 and y > entrance.y1 and y < entrance.y2)
         {
-          //cout<<"Person is *At Entrance"<<endl;
+          cout<<"Person is *At Entrance"<<endl;
           loc_info.person_location = "At Entrance";
           CURRENT_P = entrance_loc;
         }
 
         else if (x < lobby.x1 and x > lobby.x2 and y > lobby.y1 and y < lobby.y2)
         {
-          //cout<<"Person is *Inside Lobby"<<endl;
+          cout<<"Person is *Inside Lobby"<<endl;
           loc_info.person_location = "Inside Lobby";          
           CURRENT_P = lobby_loc;
         }
 
         else if (x < tvRoom.x1 and x > tvRoom.x2 and y > tvRoom.y1 and y < tvRoom.y2)
         {
-          //cout<<"Person is *Inside TV Room"<<endl;
+          cout<<"Person is *Inside TV Room"<<endl;
           loc_info.person_location = "Inside TvRoom";
           CURRENT_P = tvRoom_loc;
         }
 
         else if (x < bedRoom.x1 and x > bedRoom.x2 and y > bedRoom.y1 and y < bedRoom.y2)
         {
-          //cout<<"Person is *Inside Bedroom"<<endl;
+          cout<<"Person is *Inside Bedroom"<<endl;
           loc_info.person_location = "Inside BedRoom"; 
           CURRENT_P = bedRoom_loc;
         }
 
         else 
         {
-            //cout<<"--Away--"<<endl;
+            cout<<"--Away--"<<endl;
             loc_info.person_location = "Away";
             CURRENT_P = away_loc;
         }
@@ -289,10 +291,10 @@ class MAP_TAG
         person_loc_cam.point.x = (msg->point.z)/1000;   //z
         person_loc_cam.point.y = (msg->point.x)/-1000;   //x 
         person_loc_cam.point.z = (msg->point.y)/1000;   //y
-        cout<<"--"<<endl;
-        cout<<"X: "<< person_loc_cam.point.x<<endl;
-        cout<<"Y: "<< person_loc_cam.point.y<<endl;
-        cout<<"Z: "<< person_loc_cam.point.z<<endl;
+        //  cout<<"--"<<endl;
+        //  cout<<"X: "<< person_loc_cam.point.x<<endl;
+        //  cout<<"Y: "<< person_loc_cam.point.y<<endl;
+        //  cout<<"Z: "<< person_loc_cam.point.z<<endl;
     }
 
     //CallBack Function for Subscriber to /amcl_pose)  
