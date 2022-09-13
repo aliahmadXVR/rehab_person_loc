@@ -23,19 +23,17 @@ After following the step 2 in the pre-requisites, you must have the following in
 ## Usage 
 After following the above setup process, run the following nodes: 
 
-1. Run the following node
+1. Run the following launch file to display the Location labels as RVIZ markers as shown below in the image,
    
    ```bash 
-   rosrun rehab_person_loc publish_text_marker_act
+   roslaunch rehab_person_loc rehab_person_loc_pubMarkers.launch
    ``` 
-   to display the markers on the living lab map. These markers locations are hardcoded in the code. To modify the location of any marker, edit the respective marker location in ```publish_text_marker_act.cpp``` file. The map in the RVIZ should look similar to the one shown below after adding the relevant marker topics.  
-
    ![Reuqired Output](images/map_labeled.png)
 
-2. Run the following to run the main node.,
+2. Run the following main launch file,
    
    ```bash 
-   rosrun rehab_person_loc getTime_act
+   rosrun rehab_person_loc rehab_person_loc_time.launch
    ```
    
 
