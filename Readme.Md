@@ -8,7 +8,7 @@ This package contains nodes which track the person location & the time spent in 
 ## Pre-Requisites
 
 1. This package is tested with ROS Melodic so preferably use the package with same ROS version.
-2. This package depends highly on the navigation stack & AI model which finds the person in the camera frame and publishes its location on a ROS topic. Follow these [instructions](https://github.com/zeeshan-sardar/ros_ai_integration) for setting up the AI model on the robot, moreover for running the navigation on the robot, follow instructions [here]().
+2. This package depends highly on the navigation stack & AI model which finds the person in the camera frame and publishes its location on a ROS topic. Follow these [instructions](https://github.com/zeeshan-sardar/ros_ai_integration) for setting up the AI model on the robot, moreover for running the navigation on the robot, follow instructions [here](https://github.com/Xavorcorp/Rehabbot-EETeam).
 
 
 ## Setup 
